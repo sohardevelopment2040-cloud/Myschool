@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f6f78">
+<title>المفكرة المدرسية لولي الأمر</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="المفكرة المدرسية">
+<style>
+:root{
+  --bg:#f3f6f7;--card:#fff;--ink:#1d2b33;--muted:#6b7c85;--line:#e1e8eb;
+  --pri:#1f6f78;--pri2:#2a9d8f;--warn:#e9a23b;--danger:#d64545;--ok:#2e9e5b;
+  --r:16px;--sh:0 2px 10px rgba(20,50,60,.07);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:"Tajawal","Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;padding-bottom:90px}
+button,input,select,textarea{font-family:inherit;font-size:15px}
+header{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;padding:18px 16px 54px;position:relative}
+header h1{font-size:21px;font-weight:800}
+header .sub{opacity:.9;font-size:13px}
+.bell{position:absolute;left:14px;top:16px;background:rgba(255,255,255,.18);border:0;color:#fff;border-radius:12px;padding:8px 12px;cursor:pointer;font-size:14px}
+.wrap{max-width:820px;margin:0 auto;padding:0 14px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:-40px}
+.stat{background:var(--card);border-radius:var(--r);padding:10px 6px;text-align:center;box-shadow:var(--sh);cursor:pointer}
+.stat b{display:block;font-size:22px}
+.stat span{font-size:12px;color:var(--muted)}
+.stat.late b{color:var(--danger)}.stat.today b{color:var(--warn)}.stat.up b{color:var(--pri)}.stat.done b{color:var(--ok)}
+.alert{background:#fff4e0;border:1px solid #f3d29a;border-radius:var(--r);padding:12px 14px;margin-top:14px;display:none}
+.alert h3{font-size:15px;margin-bottom:4px}
+.alert ul{padding-right:18px;font-size:14px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:14px 0 4px;scrollbar-width:none}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;white-space:nowrap;cursor:pointer;font-size:14px}
+.chip.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.chip i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-left:6px;vertical-align:middle}
+.search{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:8px;background:var(--card)}
+.sec{margin-top:18px}
+.sec h2{font-size:15px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.sec h2 .n{background:var(--line);color:var(--ink);border-radius:999px;padding:0 9px;font-size:12px}
+.task{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:12px 14px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start;border-right:5px solid var(--pri)}
+.task.done{opacity:.6}.task.done .t-title{text-decoration:line-through}
+.chk{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);background:#fff;flex:none;cursor:pointer;margin-top:2px;display:grid;place-items:center;color:#fff;font-size:15px}
+.task.done .chk{background:var(--ok);border-color:var(--ok)}
+.t-body{flex:1;min-width:0}
+.t-title{font-weight:700;font-size:16px}
+.t-meta{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:2px}
+.t-det{font-size:13.5px;margin-top:6px;white-space:pre-wrap;color:#3b4b53}
+.tag{font-size:12px;border-radius:8px;padding:1px 8px;font-weight:700}
+.tag.hw{background:#e3f2fd;color:#1565c0}.tag.pr{background:#f3e5f5;color:#7b1fa2}.tag.ex{background:#fde8e8;color:#c62828}.tag.ot{background:#eceff1;color:#455a64}
+.due{font-weight:700}.due.late{color:var(--danger)}.due.today{color:#b9770e}
+.t-act{display:flex;flex-direction:column;gap:6px}
+.ib{border:0;background:var(--bg);border-radius:10px;width:34px;height:34px;cursor:pointer;font-size:15px}
+.ib.wa{background:#e7f8ee}
+.wa-btn{width:100%;border:0;border-radius:12px;padding:10px;margin-top:8px;background:#25d366;color:#fff;font-weight:700;cursor:pointer;font-size:15px}
+.empty{text-align:center;color:var(--muted);padding:30px 10px;background:var(--card);border-radius:var(--r);margin-top:16px}
+.fab{position:fixed;left:18px;bottom:84px;width:58px;height:58px;border-radius:50%;background:var(--pri);color:#fff;border:0;font-size:30px;box-shadow:0 6px 16px rgba(31,111,120,.4);cursor:pointer;z-index:5}
+nav{position:fixed;bottom:0;right:0;left:0;background:var(--card);border-top:1px solid var(--line);display:flex;z-index:6;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;background:none;padding:10px 0 8px;color:var(--muted);font-size:12px;cursor:pointer}
+nav button b{display:block;font-size:20px;font-weight:400}
+nav button.on{color:var(--pri);font-weight:700}
+.page{display:none}.page.on{display:block}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:14px;margin-top:14px}
+.btn{border:0;border-radius:12px;padding:10px 16px;cursor:pointer;font-weight:700;background:var(--pri);color:#fff}
+.btn.sec2{background:var(--bg);color:var(--ink)}.btn.red{background:var(--danger)}
+.btn.full{width:100%}
+.row{display:flex;gap:10px}.row>*{flex:1}
+/* calendar */
+.cal-h{display:flex;justify-content:space-between;align-items:center;margin-top:16px}
+.cal-h b{font-size:17px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:10px}
+.cal .dn{text-align:center;font-size:12px;color:var(--muted);padding:4px 0}
+.day{background:var(--card);border-radius:10px;min-height:54px;padding:4px;cursor:pointer;font-size:13px;position:relative;border:2px solid transparent}
+.day.out{opacity:.35}.day.td{border-color:var(--pri)}.day.sel{background:#e0f2f1}
+.dots{display:flex;flex-wrap:wrap;gap:2px;margin-top:3px}
+.dots i{width:7px;height:7px;border-radius:50%}
+/* children */
+.kid{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.kid:last-child{border:0}
+.av{width:42px;height:42px;border-radius:50%;color:#fff;display:grid;place-items:center;font-weight:800;font-size:18px;flex:none}
+.kid .info{flex:1}.kid small{color:var(--muted)}
+/* modal */
+.mb{position:fixed;inset:0;background:rgba(10,30,35,.45);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.mb.on{display:flex}
+.modal{background:var(--card);width:100%;max-width:560px;border-radius:22px 22px 0 0;padding:18px 16px 24px;max-height:92vh;overflow:auto;animation:up .2s}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.modal h3{font-size:18px;margin-bottom:12px}
+label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+.f{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fbfcfc}
+textarea.f{min-height:70px;resize:vertical}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 4px;cursor:pointer;font-size:14px}
+.seg button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.colors{display:flex;gap:8px;flex-wrap:wrap}
+.colors button{width:32px;height:32px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px var(--line);cursor:pointer}
+.colors button.on{box-shadow:0 0 0 3px var(--ink)}
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#1d2b33;color:#fff;padding:10px 18px;border-radius:12px;font-size:14px;display:none;z-index:30}
+.hint{font-size:13px;color:var(--muted);margin-top:6px}
+@media(min-width:700px){.modal{border-radius:22px;margin-bottom:5vh}.mb{align-items:center}}
+@media print{nav,.fab,.bell,.t-act,.chk,.chips,.search,.alert{display:none!important}body{background:#fff}.task{box-shadow:none;border:1px solid #ccc}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>📚 المفكرة المدرسية</h1>
+    <div class="sub" id="todayTxt"></div>
+  </div>
+  <button class="bell" id="bellBtn" onclick="askNotify()">🔔 تفعيل التنبيهات</button>
+  <button class="bell" id="installBtn" style="top:58px;display:none" onclick="installApp()">📥 تثبيت التطبيق</button>
+</header>
+
+<div class="wrap">
+
+<!-- الرئيسية -->
+<section class="page on" id="p-home">
+  <div class="stats">
+    <div class="stat late" onclick="jump('late')"><b id="sLate">0</b><span>متأخرة</span></div>
+    <div class="stat today" onclick="jump('today')"><b id="sToday">0</b><span>اليوم</span></div>
+    <div class="stat up" onclick="jump('week')"><b id="sUp">0</b><span>قادمة</span></div>
+    <div class="stat done" onclick="jump('done')"><b id="sDone">0</b><span>منجزة</span></div>
+  </div>
+  <div class="alert" id="alertBox"><h3>⏰ تذكير</h3><ul id="alertList"></ul></div>
+  <div class="chips" id="kidChips"></div>
+  <input class="search" id="q" placeholder="🔍 بحث بالمادة أو العنوان..." oninput="render()">
+  <button class="wa-btn" id="waSumBtn" onclick="waSummary()">📲 إرسال ملخص المهام بالواتساب</button>
+  <div id="lists"></div>
+</section>
+
+<!-- التقويم -->
+<section class="page" id="p-cal">
+  <div class="cal-h">
+    <button class="ib" onclick="moveMonth(1)">‹</button>
+    <b id="calTitle"></b>
+    <button class="ib" onclick="moveMonth(-1)">›</button>
+  </div>
+  <div class="cal" id="cal"></div>
+  <div class="sec"><h2 id="calDayTitle"></h2><div id="calDayList"></div></div>
+</section>
+
+<!-- الأبناء -->
+<section class="page" id="p-kids">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <b>👨‍👩‍👧‍👦 الأبناء</b>
+      <button class="btn" onclick="openKid()">+ إضافة</button>
+    </div>
+    <div id="kidList"></div>
+  </div>
+</section>
+
+<!-- الإعدادات -->
+<section class="page" id="p-set">
+  <div class="card">
+    <b>🔔 التنبيهات</b>
+    <p class="hint">تظهر التذكيرات داخل المفكرة عند فتحها، وكإشعارات على الجهاز إذا فعّلتها والمفكرة مفتوحة في المتصفح.</p>
+    <button class="btn full" style="margin-top:10px" onclick="askNotify()">تفعيل إشعارات الجهاز</button>
+  </div>
+  <div class="card">
+    <b>📲 الواتساب</b>
+    <p class="hint">رقم يُرسل إليه مباشرة (مثل رقم الأم أو الابن). اتركه فارغاً لتختار جهة الاتصال في كل مرة.</p>
+    <input class="f" id="waNum" type="tel" inputmode="tel" placeholder="مثال: 96891234567" style="margin-top:8px" oninput="saveWaNum()">
+    <p class="hint">اكتب الرقم مع مفتاح الدولة بدون + أو أصفار (عُمان: 968).</p>
+  </div>
+  <div class="card">
+    <b>💾 النسخ الاحتياطي</b>
+    <p class="hint">البيانات محفوظة في هذا المتصفح فقط. احفظ نسخة احتياطية بين حين وآخر.</p>
+    <div class="row" style="margin-top:10px">
+      <button class="btn" onclick="exportData()">تصدير نسخة</button>
+      <button class="btn sec2" onclick="document.getElementById('imp').click()">استيراد نسخة</button>
+    </div>
+    <input type="file" id="imp" accept=".json" hidden onchange="importData(this)">
+  </div>
+  <div class="card">
+    <b>🖨️ طباعة</b>
+    <p class="hint">طباعة قائمة المهام الحالية (حسب الابن المختار في الرئيسية).</p>
+    <button class="btn sec2 full" style="margin-top:10px" onclick="go('home');setTimeout(print,200)">طباعة المهام</button>
+  </div>
+  <div class="card">
+    <b>🧹 تنظيف</b>
+    <div class="row" style="margin-top:10px">
+      <button class="btn sec2" onclick="clearDone()">حذف المنجزة</button>
+      <button class="btn red" onclick="wipeAll()">حذف كل البيانات</button>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<button class="fab" onclick="openTask()" title="مهمة جديدة">+</button>
+
+<nav>
+  <button class="on" data-p="home" onclick="go('home')"><b>🏠</b>الرئيسية</button>
+  <button data-p="cal" onclick="go('cal')"><b>📅</b>التقويم</button>
+  <button data-p="kids" onclick="go('kids')"><b>👧</b>الأبناء</button>
+  <button data-p="set" onclick="go('set')"><b>⚙️</b>الإعدادات</button>
+</nav>
+
+<!-- نافذة المهمة -->
+<div class="mb" id="taskM" onclick="if(event.target===this)closeM('taskM')">
+  <div class="modal">
+    <h3 id="taskMT">مهمة جديدة</h3>
+    <label>الابن / الابنة</label>
+    <select class="f" id="tKid"></select>
+    <label>النوع</label>
+    <div class="seg" id="tType">
+      <button data-v="hw" class="on">📝 واجب</button>
+      <button data-v="pr">🧪 مشروع</button>
+      <button data-v="ex">📖 اختبار</button>
+      <button data-v="ot">📌 أخرى</button>
+    </div>
+    <label>المادة</label>
+    <input class="f" id="tSub" list="subs" placeholder="مثال: الرياضيات">
+    <datalist id="subs">
+      <option>التربية الإسلامية</option><option>اللغة العربية</option><option>الرياضيات</option>
+      <option>العلوم</option><option>اللغة الإنجليزية</option><option>الدراسات الاجتماعية</option>
+      <option>تقنية المعلومات</option><option>الفنون التشكيلية</option><option>الرياضة المدرسية</option>
+      <option>المهارات الموسيقية</option><option>الفيزياء</option><option>الكيمياء</option><option>الأحياء</option>
+    </datalist>
+    <label>العنوان</label>
+    <input class="f" id="tTitle" placeholder="مثال: حل تمارين صفحة 45">
+    <div class="row">
+      <div><label>تاريخ التسليم</label><input class="f" type="date" id="tDue"></div>
+      <div><label>الوقت (اختياري)</label><input class="f" type="time" id="tTime"></div>
+    </div>
+    <label>التذكير قبل</label>
+    <div class="seg" id="tRem">
+      <button data-v="0">يوم التسليم</button>
+      <button data-v="1" class="on">يوم</button>
+      <button data-v="2">يومين</button>
+      <button data-v="3">3 أيام</button>
+      <button data-v="7">أسبوع</button>
+    </div>
+    <label>تفاصيل / ملاحظات</label>
+    <textarea class="f" id="tDet" placeholder="الأدوات المطلوبة، ملاحظات المعلم..."></textarea>
+    <div class="row" style="margin-top:16px">
+      <button class="btn" onclick="saveTask()">حفظ</button>
+      <button class="btn sec2" onclick="closeM('taskM')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- نافذة الابن -->
+<div class="mb" id="kidM" onclick="if(event.target===this)closeM('kidM')">
+  <div class="modal">
+    <h3 id="kidMT">إضافة ابن/ابنة</h3>
+    <label>الاسم</label>
+    <input class="f" id="kName" placeholder="الاسم">
+    <div class="row">
+      <div><label>الصف</label>
+        <select class="f" id="kGrade"></select></div>
+      <div><label>الشعبة (اختياري)</label><input class="f" id="kSec" placeholder="مثال: 3"></div>
+    </div>
+    <label>المدرسة (اختياري)</label>
+    <input class="f" id="kSchool">
+    <label>اللون</label>
+    <div class="colors" id="kColors"></div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn" onclick="saveKid()">حفظ</button>
+      <button class="btn sec2" onclick="closeM('kidM')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ========== التخزين ========== */
+const KEY='school_planner_v1';
+let db={kids:[],tasks:[]};
+function load(){try{const s=localStorage.getItem(KEY);if(s)db=JSON.parse(s)}catch(e){}
+  db.kids=db.kids||[];db.tasks=db.tasks||[]}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){toast('تعذّر الحفظ في المتصفح')}}
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+
+/* ========== أدوات التاريخ ========== */
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const parse=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
+const todayStr=()=>ymd(new Date());
+const diffDays=s=>Math.round((parse(s)-parse(todayStr()))/864e5);
+const DAYS=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const MONTHS=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+function fmtDate(s){const d=parse(s);return DAYS[d.getDay()]+' '+d.getDate()+' '+MONTHS[d.getMonth()]}
+function fmtTime(t){if(!t)return'';let[h,m]=t.split(':').map(Number);const p=h<12?'ص':'م';h=h%12||12;return h+':'+pad(m)+' '+p}
+function relTxt(s){const n=diffDays(s);
+  if(n<0)return'متأخرة '+(n===-1?'يوماً':n===-2?'يومين':(-n)+' أيام');
+  if(n===0)return'اليوم';if(n===1)return'غداً';if(n===2)return'بعد غد';return'بعد '+n+' أيام'}
+
+const TYPES={hw:'واجب',pr:'مشروع',ex:'اختبار',ot:'أخرى'};
+const COLORS=['#1f6f78','#e76f51','#7b5ea7','#2e9e5b','#e9a23b','#d6457a','#3a86ff','#6d4c41'];
+const GRADES=['الروضة','التمهيدي','الأول','الثاني','الثالث','الرابع','الخامس','السادس','السابع','الثامن','التاسع','العاشر','الحادي عشر','الثاني عشر'];
+let filterKid='all';
+
+const kidOf=id=>db.kids.find(k=>k.id===id);
+const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ========== التنقل ========== */
+function go(p){document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x.id==='p-'+p));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.p===p));
+  document.querySelector('.fab').style.display=(p==='home'||p==='cal')?'':'none';
+  if(p==='cal')renderCal();if(p==='kids')renderKids();scrollTo(0,0)}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',2200)}
+function closeM(id){document.getElementById(id).classList.remove('on')}
+function segVal(id){return document.querySelector('#'+id+' button.on').dataset.v}
+function segSet(id,v){document.querySelectorAll('#'+id+' button').forEach(b=>b.classList.toggle('on',b.dataset.v==String(v)))}
+document.querySelectorAll('.seg').forEach(s=>s.addEventListener('click',e=>{if(e.target.dataset.v!==undefined){s.querySelectorAll('button').forEach(b=>b.classList.remove('on'));e.target.classList.add('on')}}));
+
+/* ========== الرئيسية ========== */
+function visibleTasks(){const q=document.getElementById('q').value.trim();
+  return db.tasks.filter(t=>(filterKid==='all'||t.kid===filterKid)&&(!q||(t.title+' '+t.sub+' '+(t.det||'')).includes(q)))}
+function sortTasks(a){return a.sort((x,y)=>(x.due+(x.time||'99')).localeCompare(y.due+(y.time||'99')))}
+
+function taskHTML(t){const k=kidOf(t.kid);const n=diffDays(t.due);
+  const cls=t.done?'':n<0?'late':n===0?'today':'';
+  return `<div class="task ${t.done?'done':''}" style="border-right-color:${k?k.color:'#999'}">
+    <button class="chk" onclick="toggle('${t.id}')">${t.done?'✓':''}</button>
+    <div class="t-body">
+      <div class="t-title">${esc(t.title)}</div>
+      <div class="t-meta">
+        <span class="tag ${t.type}">${TYPES[t.type]}</span>
+        <span>📘 ${esc(t.sub)}</span>
+        ${k?`<span>👤 ${esc(k.name)}</span>`:''}
+      </div>
+      <div class="t-meta"><span class="due ${cls}">📅 ${fmtDate(t.due)}${t.time?' – '+fmtTime(t.time):''}</span>${t.done?'':`<span>(${relTxt(t.due)})</span>`}</div>
+      ${t.det?`<div class="t-det">${esc(t.det)}</div>`:''}
+    </div>
+    <div class="t-act">
+      <button class="ib wa" onclick="waTask('${t.id}')" title="إرسال بالواتساب">📲</button>
+      <button class="ib" onclick="openTask('${t.id}')" title="تعديل">✏️</button>
+      <button class="ib" onclick="delTask('${t.id}')" title="حذف">🗑️</button>
+    </div></div>`}
+
+function section(id,title,arr){if(!arr.length)return'';
+  return `<div class="sec" id="sec-${id}"><h2>${title}<span class="n">${arr.length}</span></h2>${arr.map(taskHTML).join('')}</div>`}
+
+function render(){
+  // شرائح الأبناء
+  const chips=document.getElementById('kidChips');
+  chips.innerHTML=`<button class="chip ${filterKid==='all'?'on':''}" onclick="setKid('all')">الكل</button>`+
+    db.kids.map(k=>`<button class="chip ${filterKid===k.id?'on':''}" onclick="setKid('${k.id}')"><i style="background:${k.color}"></i>${esc(k.name)}</button>`).join('');
+  chips.style.display=db.kids.length?'flex':'none';
+  document.getElementById('waSumBtn').style.display=db.tasks.some(t=>!t.done)?'':'none';
+
+  const all=sortTasks(visibleTasks());
+  const open=all.filter(t=>!t.done),done=all.filter(t=>t.done).reverse();
+  const g={late:[],today:[],tom:[],week:[],later:[]};
+  open.forEach(t=>{const n=diffDays(t.due);
+    if(n<0)g.late.push(t);else if(n===0)g.today.push(t);else if(n===1)g.tom.push(t);else if(n<=7)g.week.push(t);else g.later.push(t)});
+  document.getElementById('sLate').textContent=g.late.length;
+  document.getElementById('sToday').textContent=g.today.length;
+  document.getElementById('sUp').textContent=g.tom.length+g.week.length+g.later.length;
+  document.getElementById('sDone').textContent=done.length;
+
+  let h='';
+  if(!db.kids.length){h=`<div class="empty">👋 أهلاً بك<br>ابدأ بإضافة أبنائك ثم سجّل واجباتهم ومشاريعهم.<br><br><button class="btn" onclick="go('kids');openKid()">+ إضافة ابن/ابنة</button></div>`}
+  else if(!all.length){h=`<div class="empty">لا توجد مهام بعد 🎉<br>اضغط زر <b>+</b> لإضافة واجب أو مشروع.</div>`}
+  else{
+    h+=section('late','⚠️ متأخرة',g.late)+section('today','🔥 اليوم',g.today)+section('tom','⏭️ غداً',g.tom)+
+       section('week','📆 خلال الأسبوع',g.week)+section('later','🗓️ لاحقاً',g.later);
+    if(done.length)h+=`<div class="sec" id="sec-done"><h2>✅ منجزة<span class="n">${done.length}</span>
+      <button class="chip" style="margin-right:auto;padding:2px 10px" onclick="showDone=!showDone;render()">${showDone?'إخفاء':'عرض'}</button></h2>
+      ${showDone?done.map(taskHTML).join(''):''}</div>`;
+  }
+  document.getElementById('lists').innerHTML=h;
+  renderAlert();
+}
+let showDone=false;
+function setKid(id){filterKid=id;render()}
+function jump(id){go('home');if(id==='done'&&!showDone){showDone=true;render()}
+  const map={week:['tom','week','later']};const ids=map[id]||[id];
+  for(const i of ids){const el=document.getElementById('sec-'+i);if(el){el.scrollIntoView({behavior:'smooth'});return}}
+  toast('لا توجد مهام في هذا القسم')}
+
+/* ========== المهام ========== */
+let editTask=null;
+function openTask(id,date){
+  if(!db.kids.length){toast('أضف ابناً أولاً');go('kids');openKid();return}
+  editTask=id?db.tasks.find(t=>t.id===id):null;
+  document.getElementById('taskMT').textContent=editTask?'تعديل المهمة':'مهمة جديدة';
+  document.getElementById('tKid').innerHTML=db.kids.map(k=>`<option value="${k.id}">${esc(k.name)}</option>`).join('');
+  const t=editTask||{kid:filterKid!=='all'?filterKid:db.kids[0].id,type:'hw',sub:'',title:'',due:date||ymd(new Date(Date.now()+864e5)),time:'',rem:1,det:''};
+  tKid.value=t.kid;segSet('tType',t.type);tSub.value=t.sub;tTitle.value=t.title;tDue.value=t.due;tTime.value=t.time||'';segSet('tRem',t.rem);tDet.value=t.det||'';
+  document.getElementById('taskM').classList.add('on');setTimeout(()=>tSub.focus(),150)}
+function saveTask(){
+  const t={kid:tKid.value,type:segVal('tType'),sub:tSub.value.trim(),title:tTitle.value.trim(),due:tDue.value,time:tTime.value,rem:+segVal('tRem'),det:tDet.value.trim()};
+  if(!t.sub){toast('اكتب اسم المادة');return}
+  if(!t.title)t.title=TYPES[t.type]+' '+t.sub;
+  if(!t.due){toast('حدد تاريخ التسليم');return}
+  if(editTask){if(editTask.due!==t.due||editTask.rem!==t.rem)editTask.notified='';Object.assign(editTask,t)}
+  else db.tasks.push({id:uid(),done:false,created:todayStr(),notified:'',...t});
+  save();closeM('taskM');render();refreshCal();toast('تم الحفظ ✓');checkReminders()}
+function toggle(id){const t=db.tasks.find(x=>x.id===id);t.done=!t.done;t.doneAt=t.done?todayStr():'';save();render();refreshCal();if(t.done)toast('أحسنت! تم الإنجاز 🌟')}
+function delTask(id){if(!confirm('حذف هذه المهمة؟'))return;db.tasks=db.tasks.filter(t=>t.id!==id);save();render();refreshCal()}
+
+/* ========== التذكير ========== */
+function dueReminders(){return db.tasks.filter(t=>!t.done&&diffDays(t.due)<=t.rem)}
+function renderAlert(){
+  const r=sortTasks(dueReminders().filter(t=>filterKid==='all'||t.kid===filterKid));
+  const box=document.getElementById('alertBox');
+  if(!r.length){box.style.display='none';return}
+  box.style.display='block';
+  document.getElementById('alertList').innerHTML=r.slice(0,6).map(t=>{const k=kidOf(t.kid);
+    return `<li><b>${esc(k?k.name:'')}</b>: ${TYPES[t.type]} ${esc(t.sub)} – ${esc(t.title)} <b style="color:${diffDays(t.due)<0?'var(--danger)':'#b9770e'}">(${relTxt(t.due)})</b></li>`}).join('')+
+    (r.length>6?`<li>و ${r.length-6} مهام أخرى...</li>`:'')}
+function checkReminders(){
+  const td=todayStr();let changed=false;
+  dueReminders().forEach(t=>{
+    if(t.notified===td)return;
+    // إن كان للمهمة وقت ويوم التسليم اليوم، ننتظر حتى ساعة قبل الوقت إن كان التذكير "يوم التسليم"
+    t.notified=td;changed=true;
+    const k=kidOf(t.kid);
+    notify(`${TYPES[t.type]}: ${t.sub} – ${k?k.name:''}`,`${t.title}\nالتسليم: ${fmtDate(t.due)} (${relTxt(t.due)})`);
+  });
+  if(changed)save()}
+function notify(title,body){
+  if(!('Notification' in window)||Notification.permission!=='granted')return;
+  const opt={body,tag:title,dir:'rtl',lang:'ar',icon:'icons/icon-192.png',badge:'icons/icon-192.png'};
+  // على أندرويد يجب عرض الإشعار عبر عامل الخدمة
+  if('serviceWorker' in navigator){navigator.serviceWorker.ready.then(r=>r.showNotification('📚 '+title,opt)).catch(()=>{});return}
+  try{new Notification('📚 '+title,opt)}catch(e){}
+}
+function askNotify(){
+  if(!('Notification' in window)){toast('المتصفح لا يدعم الإشعارات');return}
+  Notification.requestPermission().then(p=>{updateBell();
+    if(p==='granted'){toast('تم تفعيل التنبيهات ✓');db.tasks.forEach(t=>t.notified='');checkReminders()}
+    else toast('لم يتم السماح بالإشعارات')})}
+function updateBell(){const b=document.getElementById('bellBtn');
+  if('Notification' in window&&Notification.permission==='granted')b.textContent='🔔 مفعّلة';}
+
+/* ========== التقويم ========== */
+let calM=new Date();calM.setDate(1);let calSel=todayStr();
+function moveMonth(d){calM.setMonth(calM.getMonth()+d);renderCal()}
+function refreshCal(){if(document.getElementById('p-cal').classList.contains('on'))renderCal()}
+function renderCal(){
+  document.getElementById('calTitle').textContent=MONTHS[calM.getMonth()]+' '+calM.getFullYear();
+  const first=new Date(calM),start=new Date(first);start.setDate(1-first.getDay());
+  let h=DAYS.map(d=>`<div class="dn">${d.slice(0,3).replace('ال','')}</div>`).join('');
+  const td=todayStr();
+  for(let i=0;i<42;i++){const d=new Date(start);d.setDate(start.getDate()+i);const s=ymd(d);
+    const ts=db.tasks.filter(t=>t.due===s&&(filterKid==='all'||t.kid===filterKid));
+    h+=`<div class="day ${d.getMonth()!==calM.getMonth()?'out':''} ${s===td?'td':''} ${s===calSel?'sel':''}" onclick="calSel='${s}';renderCal()">
+      ${d.getDate()}<div class="dots">${ts.slice(0,6).map(t=>{const k=kidOf(t.kid);return`<i style="background:${t.done?'#bbb':(k?k.color:'#999')}"></i>`}).join('')}</div></div>`;
+    if(i===34&&d.getMonth()!==calM.getMonth())break;}
+  document.getElementById('cal').innerHTML=h;
+  const list=sortTasks(db.tasks.filter(t=>t.due===calSel&&(filterKid==='all'||t.kid===filterKid)));
+  document.getElementById('calDayTitle').innerHTML=fmtDate(calSel)+` <button class="chip" style="margin-right:auto;padding:2px 12px" onclick="openTask(null,'${calSel}')">+ مهمة لهذا اليوم</button>`;
+  document.getElementById('calDayList').innerHTML=list.length?list.map(taskHTML).join(''):'<div class="empty" style="margin-top:0">لا توجد مهام في هذا اليوم</div>'}
+
+/* ========== الأبناء ========== */
+let editKid=null,kidColor=COLORS[0];
+function renderKids(){
+  const el=document.getElementById('kidList');
+  if(!db.kids.length){el.innerHTML='<p class="hint" style="padding:16px 0">لم تتم إضافة أبناء بعد.</p>';return}
+  el.innerHTML=db.kids.map(k=>{const open=db.tasks.filter(t=>t.kid===k.id&&!t.done).length,late=db.tasks.filter(t=>t.kid===k.id&&!t.done&&diffDays(t.due)<0).length;
+    return `<div class="kid"><div class="av" style="background:${k.color}">${esc(k.name.charAt(0))}</div>
+      <div class="info"><b>${esc(k.name)}</b><br><small>الصف ${esc(k.grade)}${k.sec?' / '+esc(k.sec):''}${k.school?' – '+esc(k.school):''}</small><br>
+      <small>${open} مهام مفتوحة${late?` • <span style="color:var(--danger)">${late} متأخرة</span>`:''}</small></div>
+      <button class="ib" onclick="openKid('${k.id}')">✏️</button><button class="ib" onclick="delKid('${k.id}')">🗑️</button></div>`}).join('')}
+function openKid(id){editKid=id?kidOf(id):null;
+  document.getElementById('kidMT').textContent=editKid?'تعديل البيانات':'إضافة ابن/ابنة';
+  kGrade.innerHTML=GRADES.map(g=>`<option>${g}</option>`).join('');
+  const k=editKid||{name:'',grade:'الأول',sec:'',school:'',color:COLORS[db.kids.length%COLORS.length]};
+  kName.value=k.name;kGrade.value=k.grade;kSec.value=k.sec;kSchool.value=k.school;kidColor=k.color;drawColors();
+  document.getElementById('kidM').classList.add('on');setTimeout(()=>kName.focus(),150)}
+function drawColors(){document.getElementById('kColors').innerHTML=COLORS.map(c=>`<button class="${c===kidColor?'on':''}" style="background:${c}" onclick="kidColor='${c}';drawColors()"></button>`).join('')}
+function saveKid(){const k={name:kName.value.trim(),grade:kGrade.value,sec:kSec.value.trim(),school:kSchool.value.trim(),color:kidColor};
+  if(!k.name){toast('اكتب الاسم');return}
+  if(editKid)Object.assign(editKid,k);else db.kids.push({id:uid(),...k});
+  save();closeM('kidM');renderKids();render();toast('تم الحفظ ✓')}
+function delKid(id){const n=db.tasks.filter(t=>t.kid===id).length;
+  if(!confirm('حذف هذا الابن'+(n?` وجميع مهامه (${n})`:'')+'؟'))return;
+  db.kids=db.kids.filter(k=>k.id!==id);db.tasks=db.tasks.filter(t=>t.kid!==id);if(filterKid===id)filterKid='all';save();renderKids();render()}
+
+/* ========== الواتساب ========== */
+const TYPE_ICON={hw:'📝',pr:'🧪',ex:'📖',ot:'📌'};
+function saveWaNum(){db.waNum=document.getElementById('waNum').value.replace(/\D/g,'').replace(/^00/,'');save()}
+function waOpen(text){
+  const num=(db.waNum||'').replace(/\D/g,'');
+  const url=(num?'https://wa.me/'+num:'https://api.whatsapp.com/send')+'?text='+encodeURIComponent(text);
+  window.open(url,'_blank')}
+function taskLine(t,withKid){const k=kidOf(t.kid);
+  return `${TYPE_ICON[t.type]} ${TYPES[t.type]} ${t.sub}: ${t.title}`+(withKid&&k?` (${k.name})`:'')+
+    `\n   📅 ${fmtDate(t.due)}${t.time?' – '+fmtTime(t.time):''} • ${relTxt(t.due)}`}
+function waTask(id){const t=db.tasks.find(x=>x.id===id);const k=kidOf(t.kid);
+  let m=`📚 *تذكير مدرسي*\n👤 ${k?k.name:''}${k?' – الصف '+k.grade:''}\n\n`+
+    `${TYPE_ICON[t.type]} *${TYPES[t.type]}*: ${t.sub}\n📌 ${t.title}\n📅 التسليم: ${fmtDate(t.due)}${t.time?' – '+fmtTime(t.time):''}`+
+    (t.done?'\n✅ تم الإنجاز':`\n⏳ ${relTxt(t.due)}`)+(t.det?`\n\n📝 ${t.det}`:'');
+  waOpen(m)}
+function waSummary(){
+  const open=sortTasks(visibleTasks().filter(t=>!t.done));
+  if(!open.length){toast('لا توجد مهام مفتوحة للإرسال');return}
+  const d=new Date();const k=filterKid!=='all'?kidOf(filterKid):null;
+  let m=`📚 *ملخص المهام المدرسية*${k?' – '+k.name:''}\n🗓️ ${DAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}\n`;
+  const groups=[['⚠️ *متأخرة*',t=>diffDays(t.due)<0],['🔥 *اليوم*',t=>diffDays(t.due)===0],['⏭️ *غداً*',t=>diffDays(t.due)===1],
+    ['📆 *خلال الأسبوع*',t=>{const n=diffDays(t.due);return n>1&&n<=7}],['🗓️ *لاحقاً*',t=>diffDays(t.due)>7]];
+  groups.forEach(([title,fn])=>{const a=open.filter(fn);if(a.length)m+=`\n${title}\n`+a.map(t=>taskLine(t,!k)).join('\n')+'\n'});
+  m+=`\nالمجموع: ${open.length} مهمة`;
+  waOpen(m)}
+
+/* ========== النسخ الاحتياطي ========== */
+function exportData(){const b=new Blob([JSON.stringify(db,null,1)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='المفكرة_المدرسية_'+todayStr()+'.json';a.click();toast('تم تصدير النسخة')}
+function importData(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.kids||!d.tasks)throw 0;
+    if(!confirm('سيتم استبدال البيانات الحالية بالنسخة المستوردة. متابعة؟'))return;
+    db=d;save();document.getElementById('waNum').value=db.waNum||'';render();renderKids();toast('تم الاستيراد ✓')}catch(e){toast('ملف غير صالح')}inp.value=''};r.readAsText(f)}
+function clearDone(){const n=db.tasks.filter(t=>t.done).length;if(!n){toast('لا توجد مهام منجزة');return}
+  if(!confirm(`حذف ${n} مهمة منجزة؟`))return;db.tasks=db.tasks.filter(t=>!t.done);save();render();toast('تم الحذف')}
+function wipeAll(){if(!confirm('سيتم حذف جميع الأبناء والمهام نهائياً. هل أنت متأكد؟'))return;
+  db={kids:[],tasks:[]};save();render();renderKids();toast('تم حذف البيانات')}
+
+/* ========== تشغيل ========== */
+load();
+(function(){const d=new Date();document.getElementById('todayTxt').textContent=DAYS[d.getDay()]+' '+d.getDate()+' '+MONTHS[d.getMonth()]+' '+d.getFullYear()+
+  (()=>{try{return' • '+new Intl.DateTimeFormat('ar-SA-u-ca-islamic',{day:'numeric',month:'long',year:'numeric'}).format(d)}catch(e){return''}})()})();
+document.getElementById('waNum').value=db.waNum||'';
+updateBell();render();checkReminders();
+setInterval(()=>{checkReminders();render()},60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){render();checkReminders()}});
+
+/* ========== PWA ========== */
+if('serviceWorker' in navigator&&location.protocol.startsWith('http')){
+  navigator.serviceWorker.register('sw.js').catch(()=>{})}
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;document.getElementById('installBtn').style.display=''});
+window.addEventListener('appinstalled',()=>{document.getElementById('installBtn').style.display='none';toast('تم تثبيت التطبيق ✓')});
+function installApp(){if(!deferredPrompt)return;deferredPrompt.prompt();deferredPrompt.userChoice.finally(()=>{deferredPrompt=null;document.getElementById('installBtn').style.display='none'})}
+// اختصار "مهمة جديدة" من أيقونة التطبيق
+if(new URLSearchParams(location.search).get('new')==='1')setTimeout(()=>openTask(),300);
+</script>
+</body>
+</html>
